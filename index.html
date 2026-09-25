@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HackStart</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <style>
   :root{
     --ink:#0E1420;
@@ -49,6 +51,26 @@
     max-width:760px;
     margin:0 auto;
     padding: 4rem 1.5rem 5rem;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    margin:0 0 1.75rem;
+  }
+  .brand img{
+    width:2rem;
+    height:2rem;
+    border-radius:6px;
+    object-fit:cover;
+  }
+  .brand span{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.95rem;
+    font-weight:500;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    opacity:0.8;
   }
   .kicker{
     font-family: 'Space Grotesk', -apple-system, sans-serif;
@@ -168,6 +190,11 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="brand">
+    <img src="/Hackstart-1.0/logo.png" alt="HackStart logo">
+    <span>HackStart</span>
+  </div>
+
   <p class="kicker">Beginner hackathon</p>
   <h1>HackStart</h1>
   <p class="sub">A three-part sprint built for first-time hackers: get oriented, get mentored, then ship it and get judged.</p>
