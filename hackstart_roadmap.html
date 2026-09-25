@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HackStart</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- Inter & Fira Code Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            ghDark: '#0d1117',
+            ghCanvas: '#161b22',
+            ghCard: '#21262d',
+            ghBorder: '#30363d',
+            ghGreen: '#238636',
+            ghGreenGlow: '#2ea043',
+            ghBlue: '#58a6ff',
+            ghPurple: '#bc8cff',
+            ghAmber: '#d29922',
+            ghRed: '#f85149',
+          },
+          boxShadow: {
+            glowBlue: '0 0 15px rgba(88, 166, 255, 0.25)',
+            glowGreen: '0 0 15px rgba(46, 160, 67, 0.25)',
+            glowAmber: '0 0 15px rgba(210, 153, 34, 0.25)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #484f58;
+    }
+
+    .glass-nav {
+      background: rgba(22, 27, 34, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .custom-checkbox:checked + div {
+      background-color: #238636;
+      border-color: #2ea043;
+    }
+
+    .modal-backdrop {
+      background: rgba(1, 4, 9, 0.82);
+      backdrop-filter: blur(6px);
+    }
+
+    .subpath-chip.active {
+      background-color: #21262d;
+      color: #58a6ff;
+      border-color: #58a6ff;
+      box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-ghDark text-gray-200 font-sans antialiased min-h-screen flex flex-col selection:bg-ghBlue selection:text-ghDark">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 border-b border-ghBorder glass-nav">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="resetFilters()">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-ghBlue via-purple-500 to-ghGreen flex items-center justify-center text-ghDark text-xl font-extrabold shadow-glowBlue">
+          <i class="fa-solid font-mono fa-terminal"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-none tracking-tight text-white flex items-center gap-2">
+            DevVault <span class="text-xs px-2 py-0.5 rounded-full bg-ghBlue/10 text-ghBlue border border-ghBlue/30 font-mono">v2.5</span>
+          </h1>
+          <p class="text-xs text-gray-400 font-mono mt-0.5">Static GitHub Resource Hub & Roadmap</p>
+        </div>
+      </div>
+
+      <!-- Search Input Bar -->
+      <div class="flex-1 max-w-md hidden md:block">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+          <input type="text" id="searchInput" placeholder="Search resources, topics, frameworks... (Ctrl + K)" 
+                 class="w-full bg-ghCanvas border border-ghBorder rounded-lg pl-10 pr-10 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-ghBlue transition-all">
+          <button id="clearSearchBtn" class="hidden absolute right-3 top-2.5 text-gray-400 hover:text-white">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Utilities -->
+      <div class="flex items-center gap-2">
+        <button onclick="openResetConfirmModal()" class="text-xs font-semibold px-3.5 py-2 rounded-lg bg-ghCard hover:bg-red-950/40 text-gray-300 hover:text-ghRed border border-ghBorder transition-all flex items-center gap-2" title="Reset All Tracked Progress">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span class="hidden sm:inline">Reset Progress</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Search Input Bar -->
+    <div class="px-4 pb-3 md:hidden">
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+        <input type="text" id="searchInputMobile" placeholder="Search resources..." 
+               class="w-full bg-ghCanvas border border-ghBorder rounded-lg pl-10 pr-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-ghBlue">
+      </div>
+    </div>
+
+    <!-- Header Progress Line -->
+    <div class="w-full bg-ghCanvas h-1 relative border-t border-ghBorder overflow-hidden">
+      <div id="globalProgressBar" class="bg-gradient-to-r from-ghBlue via-ghPurple to-ghGreen h-full transition-all duration-500" style="width: 0%"></div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+    
+    <!-- Progress Banner & View Switcher -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 bg-ghCanvas border border-ghBorder rounded-xl p-4 sm:p-5 shadow-sm">
+      
+      <!-- Progress Indicator -->
+      <div class="flex items-center gap-4">
+        <div class="relative flex items-center justify-center">
+          <svg class="w-14 h-14 transform -rotate-90">
+            <circle cx="28" cy="28" r="24" stroke="currentColor" stroke-width="5" class="text-ghBorder" fill="transparent"/>
+            <circle id="statCircleProgress" cx="28" cy="28" r="24" stroke="currentColor" stroke-width="5" class="text-ghGreen transition-all duration-700" fill="transparent" stroke-dasharray="150.79" stroke-dashoffset="150.79"/>
+          </svg>
+          <span id="statPercentageText" class="absolute text-xs font-bold text-white font-mono">0%</span>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            Resource Mastery Progress
+            <span id="statFractionBadge" class="text-xs px-2.5 py-0.5 rounded-md bg-ghBorder text-gray-300 font-mono">0 / 0 Done</span>
+          </h2>
+          <p class="text-xs text-gray-400 mt-1">Tracked with browser storage. Click checkboxes to mark items done.</p>
+        </div>
+      </div>
+
+      <!-- View Switcher Tabs (Grid & Folder View) -->
+      <div class="flex items-center gap-1 bg-ghDark p-1 rounded-lg border border-ghBorder">
+        <button id="viewTabGrid" onclick="switchView('grid')" class="px-3.5 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 transition-all bg-ghCard text-white border border-ghBorder shadow-sm">
+          <i class="fa-solid fa-grip text-ghBlue"></i> Grid View
+        </button>
+        <button id="viewTabFolder" onclick="switchView('folder')" class="px-3.5 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 text-gray-400 hover:text-white transition-all">
+          <i class="fa-solid fa-folder-tree text-ghAmber"></i> Tree Explorer
+        </button>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN LAYOUT -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- LEFT SIDEBAR: Main Folders & Subpath Navigation -->
+      <aside class="lg:col-span-3 space-y-4">
+        
+        <!-- Folder Directory Navigation -->
+        <div class="bg-ghCanvas border border-ghBorder rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-ghBorder">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-2 font-mono">
+              <i class="fa-regular fa-folder-open text-ghAmber"></i> Root Directory
+            </h3>
+            <button onclick="resetFilters()" class="text-xs text-ghBlue hover:underline font-mono">Reset</button>
+          </div>
+
+          <nav class="space-y-1.5" id="sidebarCategoryTree">
+            <!-- Dynamically Populated with Folders and Subnodes -->
+          </nav>
+        </div>
+
+        <!-- Completion Status Filter -->
+        <div class="bg-ghCanvas border border-ghBorder rounded-xl p-4">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2.5 font-mono">Status Filter</h3>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="setStatusFilter('all')" id="statusBtnAll" class="status-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-ghBlue text-ghDark">All</button>
+            <button onclick="setStatusFilter('pending')" id="statusBtnPending" class="status-btn px-2.5 py-1 rounded-md text-xs font-medium bg-ghCard text-gray-400 hover:text-white border border-ghBorder">Pending</button>
+            <button onclick="setStatusFilter('completed')" id="statusBtnCompleted" class="status-btn px-2.5 py-1 rounded-md text-xs font-medium bg-ghCard text-gray-400 hover:text-white border border-ghBorder">Completed</button>
+          </div>
+        </div>
+
+        <!-- Document Pro-tip Box -->
+        <div class="bg-gradient-to-b from-ghCanvas to-ghDark border border-ghBorder rounded-xl p-4">
+          <div class="flex items-center gap-2 text-ghAmber text-xs font-bold uppercase font-mono mb-2">
+            <i class="fa-solid fa-lightbulb"></i> Developer Guideline
+          </div>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            <strong class="text-white">Documentation is vital!</strong> Always refer to official documentation when starting a framework or technology to keep up with updates.
+          </p>
+        </div>
+      </aside>
+
+      <!-- RIGHT CONTENT DISPLAY -->
+      <section class="lg:col-span-9 space-y-4">
+        
+        <!-- Breadcrumb Header -->
+        <div class="flex items-center justify-between bg-ghCanvas border border-ghBorder rounded-lg px-4 py-2.5">
+          <div class="flex items-center gap-2 text-xs text-gray-400 font-mono overflow-x-auto">
+            <span class="text-ghBlue cursor-pointer hover:underline" onclick="selectFolder('all')"><i class="fa-solid fa-folder-open"></i> root</span>
+            <span>/</span>
+            <span id="breadcrumbCategory" class="text-white font-semibold">All Folders</span>
+            <span id="breadcrumbSubpathDivider" class="hidden">/</span>
+            <span id="breadcrumbSubpath" class="hidden text-ghBlue font-semibold">Subpath</span>
+          </div>
+          <span id="activeItemCount" class="text-xs text-gray-400 font-mono">0 items</span>
+        </div>
+
+        <!-- SUBPATH TABS BAR (Active when a folder or 'all' is selected) -->
+        <div id="subpathTabBar" class="bg-ghCanvas border border-ghBorder rounded-xl p-3 flex items-center gap-2 overflow-x-auto">
+          <!-- Dynamically populated with Subpath Tab Chips -->
+        </div>
+
+        <!-- VIEW CONTAINER 1: GRID VIEW -->
+        <div id="viewGridContainer" class="space-y-4">
+          <!-- Dynamically populated by JS -->
+        </div>
+
+        <!-- VIEW CONTAINER 2: TREE EXPLORER VIEW -->
+        <div id="viewFolderContainer" class="hidden space-y-4">
+          <!-- Dynamically populated by JS -->
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- MODAL 1: PERSONAL STUDY NOTES -->
+  <div id="notesModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-ghCanvas border border-ghBorder rounded-2xl max-w-xl w-full p-6 shadow-2xl relative">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-ghBorder mb-4">
+        <div class="flex items-center gap-2 text-white font-bold text-base">
+          <i class="fa-solid fa-pen-to-square text-ghBlue"></i>
+          <span>Study Notes & Annotations</span>
+        </div>
+        <button onclick="closeNotesModal()" class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-ghCard transition-all">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="mb-3">
+        <h4 id="modalResourceTitle" class="text-sm font-semibold text-ghBlue">Resource Title</h4>
+        <p class="text-xs text-gray-400 font-mono mt-0.5" id="modalResourceCategory">Folder / Platform</p>
+      </div>
+
+      <textarea id="noteInputText" rows="6" placeholder="Write personal takeaways, bash commands, code snippets, or study reminders..." 
+                class="w-full bg-ghDark border border-ghBorder rounded-lg p-3 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-ghBlue font-mono leading-relaxed mb-4"></textarea>
+
+      <div class="flex items-center justify-end gap-3">
+        <button onclick="closeNotesModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-gray-400 hover:text-white bg-ghCard hover:bg-ghBorder transition-all">
+          Cancel
+        </button>
+        <button onclick="savePersonalNote()" class="px-4 py-2 rounded-lg text-xs font-semibold text-ghDark bg-ghGreen hover:bg-ghGreenGlow transition-all shadow-glowGreen">
+          Save Note
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: CUSTOM RESET CONFIRMATION -->
+  <div id="resetModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-ghCanvas border border-ghRed/40 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      
+      <div class="flex items-center gap-3 text-ghRed font-bold text-base mb-3">
+        <div class="w-10 h-10 rounded-full bg-red-950/60 border border-red-800 flex items-center justify-center text-ghRed">
+          <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        </div>
+        <span>Reset All Progress?</span>
+      </div>
+
+      <p class="text-xs text-gray-300 leading-relaxed mb-5">
+        This action will clear all saved resource checkboxes, subpath lecture completions, and personal study notes stored in your browser. This action cannot be undone.
+      </p>
+
+      <div class="flex items-center justify-end gap-3">
+        <button onclick="closeResetModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-gray-400 hover:text-white bg-ghCard hover:bg-ghBorder transition-all">
+          Cancel
+        </button>
+        <button onclick="executeResetAll()" class="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-ghRed hover:bg-red-600 transition-all">
+          Yes, Reset All
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    // ---------------- 1. FOLDERS & SUBPATHS SCHEMA ----------------
+    const FOLDERS_SCHEMA = {
+      aiml: {
+        id: "aiml",
+        name: "AI / Machine Learning",
+        icon: "fa-brain text-emerald-400",
+        subpaths: [
+          { id: "all", name: "All AI/ML" },
+          { id: "data_handling", name: "Data Handling (Python, NumPy, Pandas, Viz)" },
+          { id: "dsa_python", name: "DSA in Python" },
+          { id: "fastapi_ml", name: "FastAPI Backend" },
+          { id: "flask_ml", name: "Flask Backend" }
+        ]
+      },
+      webdev: {
+        id: "webdev",
+        name: "Web Development",
+        icon: "fa-code text-cyan-400",
+        subpaths: [
+          { id: "all", name: "All Web Dev" },
+          { id: "mern", name: "MERN Stack Roadmap" },
+          { id: "fastapi", name: "FastAPI Track" },
+          { id: "flask", name: "Flask Track" },
+          { id: "projects", name: "15 MERN Projects" }
+        ]
+      },
+      dbms: {
+        id: "dbms",
+        name: "Database Management (DBMS)",
+        icon: "fa-database text-amber-400",
+        subpaths: [
+          { id: "all", name: "All DBMS" },
+          { id: "mongodb", name: "MongoDB Track" },
+          { id: "sql_relational", name: "SQL & Relational DBs" }
+        ]
+      },
+      deployment: {
+        id: "deployment",
+        name: "Deployment & Cloud",
+        icon: "fa-rocket text-purple-400",
+        subpaths: [
+          { id: "all", name: "All Deployment" },
+          { id: "frontend_deploy", name: "Frontend Hosting" },
+          { id: "backend_deploy", name: "Backend & Database Hosting" }
+        ]
+      },
+      c_cpp: {
+        id: "c_cpp",
+        name: "C / C++ & Algorithms",
+        icon: "fa-bolt text-rose-400",
+        subpaths: [
+          { id: "all", name: "All C/C++ & Algo" },
+          { id: "edx_c", name: "edX Dartmouth Track (Order 1-3)" },
+          { id: "yt_c", name: "YouTube Track Options" },
+          { id: "dsa_algo", name: "DSA & Algorithms" }
+        ]
+      }
+    };
+
+    // ---------------- 2. COMPLETE RESOURCE DATASETS ----------------
+    const resourcesData = [
+      // --- AI / ML FOLDER ---
+      {
+        id: "aiml_python_ds_playlist",
+        folder: "aiml",
+        subpath: "data_handling",
+        title: "Python, NumPy, Pandas & Visualization Series",
+        platform: "YouTube Playlist",
+        author: "Curated Data Science Track",
+        url: "https://www.youtube.com/playlist?list=PLxvLUL96MOO4saKDW4nHTCe1cDbDMTR5X",
+        description: "Foundational series covering Python language, NumPy for numerical computing, Pandas dataframes, and Matplotlib/Seaborn visualization.",
+        tags: ["Python", "NumPy", "Pandas", "Matplotlib", "Seaborn"],
+        subItems: [
+          { id: "sub_py_1_12", title: "Python Fundamentals (Lectures 1 - 12)" },
+          { id: "sub_numpy_13_15", title: "NumPy for ML (Lectures 13 - 15)" },
+          { id: "sub_pandas_16_22", title: "Pandas for Data Handling (Lectures 16 - 22)" },
+          { id: "sub_viz_23_24", title: "Matplotlib or Seaborn Data Viz (Lectures 23 - 24)" }
+        ],
+        milestoneNote: "💡 Completion Note: Once you complete all the aforementioned lectures, you will have the basic idea of data handling and will be ready to delve into Machine Learning."
+      },
+      {
+        id: "aiml_dsa_python_oneshot",
+        folder: "aiml",
+        subpath: "dsa_python",
+        title: "DSA in Python (12-Hour One Shot)",
+        platform: "YouTube Video",
+        author: "12-Hr Masterclass",
+        url: "https://youtu.be/f9Aje_cN_CY?si=VSf5RMsrgxhUvK8B",
+        description: "12-hour intensive masterclass covering essential Data Structures & Algorithms implemented in Python.",
+        tags: ["Python", "DSA", "Algorithms", "12-Hour"]
+      },
+      {
+        id: "aiml_fastapi_playlist",
+        folder: "aiml",
+        subpath: "fastapi_ml",
+        title: "FastAPI Backend API Tutorial",
+        platform: "YouTube Playlist",
+        author: "FastAPI Track",
+        url: "https://youtube.com/playlist?list=PLKnIA16_RmvZ41tjbKB2ZnwchfniNsMuQ&si=vqX3-mR7vhta52Uh",
+        description: "Asynchronous Python web framework for building high-performance ML model deployment APIs.",
+        tags: ["FastAPI", "Python", "ML Deployment"]
+      },
+      {
+        id: "aiml_flask_yt",
+        folder: "aiml",
+        subpath: "flask_ml",
+        title: "Flask Web Development Tutorial",
+        platform: "YouTube Video",
+        author: "Flask Track",
+        url: "https://youtu.be/Qr4QMBUPxWo?si=KVkbt7fKORTncBKlMC3Zt1i",
+        description: "Build lightweight Python web apps and ML API microservices using Flask.",
+        tags: ["Flask", "Python", "APIs"]
+      },
+
+      // --- WEB DEV FOLDER: MERN ROADMAP ---
+      {
+        id: "web_html_css",
+        folder: "webdev",
+        subpath: "mern",
+        title: "1. HTML + CSS Foundations",
+        platform: "freeCodeCamp / Code with Harry",
+        author: "MERN Step 1",
+        url: "https://www.freecodecamp.org/",
+        description: "Master HTML5 semantics, modern CSS3 Flexbox, CSS Grid, responsive design, and CSS frameworks.",
+        tags: ["HTML", "CSS", "Frontend", "MERN Step 1"]
+      },
+      {
+        id: "web_js_chai",
+        folder: "webdev",
+        subpath: "mern",
+        title: "2. JavaScript - Chai aur Code Playlist",
+        platform: "YouTube Playlist",
+        author: "Hitesh Choudhary",
+        url: "https://youtube.com/playlist?list=PLu71SKxNbfoBuX3f4EOACle2y-tRC5Q37&si=maV5d9k-VXpsnSw6",
+        description: "In-depth JavaScript series covering core variables, DOM manipulation, async/await, promises, and modern ES6+.",
+        tags: ["JavaScript", "Chai aur Code", "MERN Step 2"]
+      },
+      {
+        id: "web_js_harry",
+        folder: "webdev",
+        subpath: "mern",
+        title: "2. JavaScript - Code with Harry Playlist",
+        platform: "YouTube Playlist",
+        author: "Code with Harry",
+        url: "https://youtube.com/playlist?list=PLu0W_9lII9ahR1blWXxgSlL4y9iQBnLpR&si=aD4LqPQLAWuz5o9w",
+        description: "Comprehensive JS course from beginner syntax to advanced web development projects.",
+        tags: ["JavaScript", "Code with Harry", "MERN Step 2"]
+      },
+      {
+        id: "web_js_info",
+        folder: "webdev",
+        subpath: "mern",
+        title: "2. JavaScript.info Documentation",
+        platform: "Documentation",
+        author: "Ilya Kantor",
+        url: "https://javascript.info/",
+        description: "Exhaustive documentation and manual covering modern JavaScript from basic fundamentals to advanced object-oriented topics.",
+        tags: ["JavaScript", "Docs", "Reference"]
+      },
+      {
+        id: "web_git_github",
+        folder: "webdev",
+        subpath: "mern",
+        title: "3. Git + GitHub Version Control",
+        platform: "GitHub Skills / Code with Harry",
+        author: "MERN Step 3",
+        url: "https://skills.github.com/",
+        description: "Master version control, repository setup, commits, branches, pull requests, and GitHub workflows.",
+        tags: ["Git", "GitHub", "MERN Step 3"]
+      },
+      {
+        id: "web_react_docs",
+        folder: "webdev",
+        subpath: "mern",
+        title: "4. React.js Official Documentation",
+        platform: "Documentation",
+        author: "React Core Team",
+        url: "https://react.dev",
+        description: "Official interactive documentation covering modern React, hooks, components, state management, and context.",
+        tags: ["React", "Docs", "MERN Step 4"]
+      },
+      {
+        id: "web_react_oneshot",
+        folder: "webdev",
+        subpath: "mern",
+        title: "4. React.js One Shot Tutorial",
+        platform: "YouTube Video",
+        author: "Crash Course",
+        url: "https://youtu.be/CgkZ7MvWUAA?si=i4DMQhQW6qfOKuYK",
+        description: "Fast-paced single video crash course covering React JSX, props, state, and API fetching.",
+        tags: ["React", "One Shot", "MERN Step 4"]
+      },
+      {
+        id: "web_react_chai",
+        folder: "webdev",
+        subpath: "mern",
+        title: "4. React.js In-Detail (Chai aur Code)",
+        platform: "YouTube Playlist",
+        author: "Hitesh Choudhary",
+        url: "https://youtube.com/playlist?list=PLu71SKxNbfoDqgPchmvIsL4hTnJIrtige&si=g78fzHojf6V2FrDj",
+        description: "Detailed React course building multiple mini-projects, custom hooks, context API, and Redux Toolkit.",
+        tags: ["React", "Chai aur Code", "MERN Step 4"]
+      },
+      {
+        id: "web_node_express",
+        folder: "webdev",
+        subpath: "mern",
+        title: "5. Node.js + Express.js Backend",
+        platform: "freeCodeCamp / Code with Harry",
+        author: "MERN Step 5",
+        url: "https://www.freecodecamp.org/",
+        description: "Build robust RESTful APIs, routing, middleware, CORS, JWT authentication, and backend server logic.",
+        tags: ["Node.js", "Express", "Backend", "MERN Step 5"]
+      },
+      {
+        id: "web_mongodb_harry",
+        folder: "webdev",
+        subpath: "mern",
+        title: "6. MongoDB One Shot (Code with Harry)",
+        platform: "YouTube Video",
+        author: "Code with Harry",
+        url: "https://youtu.be/M1dKYQ7GsTg?si=xCjy5_bSjZEvEYzs",
+        description: "Complete MongoDB beginner crash course covering NoSQL collections, CRUD operations, and Mongoose ORM.",
+        tags: ["MongoDB", "NoSQL", "MERN Step 6"]
+      },
+
+      // --- WEB DEV FOLDER: FASTAPI TRACK ---
+      {
+        id: "web_fastapi_playlist",
+        folder: "webdev",
+        subpath: "fastapi",
+        title: "FastAPI Backend Tutorial Playlist",
+        platform: "YouTube Playlist",
+        author: "FastAPI Track",
+        url: "https://youtube.com/playlist?list=PLKnIA16_RmvZ41tjbKB2ZnwchfniNsMuQ&si=vqX3-mR7vhta52Uh",
+        description: "Learn asynchronous Python API development, Pydantic validation, dependency injection, and automatic OpenAPI docs with FastAPI.",
+        tags: ["FastAPI", "Python", "Backend Track"]
+      },
+      {
+        id: "web_fastapi_docs",
+        folder: "webdev",
+        subpath: "fastapi",
+        title: "FastAPI Official Documentation",
+        platform: "Documentation",
+        author: "FastAPI Docs",
+        url: "https://share.google/A7eRC7Y5jdLf5J4Vw",
+        description: "Official interactive documentation for FastAPI framework. Highly recommended to learn updates and production deployment.",
+        tags: ["FastAPI", "Docs", "Python"]
+      },
+
+      // --- WEB DEV FOLDER: FLASK TRACK ---
+      {
+        id: "web_flask_docs",
+        folder: "webdev",
+        subpath: "flask",
+        title: "Flask Official Documentation",
+        platform: "Documentation",
+        author: "Pallets Projects",
+        url: "https://share.google/mMRjETb8FI",
+        description: "Official documentation for Flask WSGI microframework. Learn routes, request handling, blueprints, and database extensions.",
+        tags: ["Flask", "Docs", "Python"]
+      },
+      {
+        id: "web_flask_yt",
+        folder: "webdev",
+        subpath: "flask",
+        title: "Flask Web Development Masterclass",
+        platform: "YouTube Video",
+        author: "Flask Video Series",
+        url: "https://youtu.be/Qr4QMBUPxWo?si=KVkbt7fKORTncBKlMC3Zt1i",
+        description: "Hands-on video course covering Flask web server setup, Jinja2 templating, SQLAlchemy ORM, and user authentication.",
+        tags: ["Flask", "YouTube", "Backend Track"]
+      },
+
+      // --- WEB DEV FOLDER: 15 MERN PRACTICE PROJECTS ---
+      { id: "proj_1", folder: "webdev", subpath: "projects", projectNum: 1, title: "1. To-Do App", platform: "MERN Project Idea", author: "Level 1 - Starter", url: "https://github.com/topics/todo-app-mern", description: "Manage tasks for the day with options to create, update, delete (CRUD), and mark tasks as done.", tags: ["CRUD", "React", "Node", "MongoDB"] },
+      { id: "proj_2", folder: "webdev", subpath: "projects", projectNum: 2, title: "2. Notes App", platform: "MERN Project Idea", author: "Level 1 - Starter", url: "https://github.com/topics/notes-app-mern", description: "Create, edit, organize, search, and delete personal notes.", tags: ["Notes", "Search", "State"] },
+      { id: "proj_3", folder: "webdev", subpath: "projects", projectNum: 3, title: "3. Expense Tracker", platform: "MERN Project Idea", author: "Level 2 - Intermediate", url: "https://github.com/topics/expense-tracker-mern", description: "Track incomes and expenses and visualize the expenditure on various categories using charts.", tags: ["Expenses", "Charts", "Express"] },
+      { id: "proj_4", folder: "webdev", subpath: "projects", projectNum: 4, title: "4. Contact Manager", platform: "MERN Project Idea", author: "Level 2 - Intermediate", url: "https://github.com/topics/contact-manager-mern", description: "Save, update, search, and delete personal as well as professional contacts.", tags: ["Contacts", "CRUD", "MERN"] },
+      { id: "proj_5", folder: "webdev", subpath: "projects", projectNum: 5, title: "5. Blog App", platform: "MERN Project Idea", author: "Level 3 - Intermediate", url: "https://github.com/topics/blog-app-mern", description: "Write and publish blog posts with user accounts (JWT), comments, and likes.", tags: ["JWT Auth", "Blog", "MongoDB"] },
+      { id: "proj_6", folder: "webdev", subpath: "projects", projectNum: 6, title: "6. URL Shortener", platform: "MERN Project Idea", author: "Level 3 - Intermediate", url: "https://github.com/topics/url-shortener-mern", description: "Shorten website links and keep track of click usage and analytics.", tags: ["Shortener", "Analytics"] },
+      { id: "proj_7", folder: "webdev", subpath: "projects", projectNum: 7, title: "7. Quiz App", platform: "MERN Project Idea", author: "Level 3 - Intermediate", url: "https://github.com/topics/quiz-app-mern", description: "Create custom quizzes, allow users to attempt them, and render real-time scores.", tags: ["Quiz", "State", "Fullstack"] },
+      { id: "proj_8", folder: "webdev", subpath: "projects", projectNum: 8, title: "8. Job Portal", platform: "MERN Project Idea", author: "Level 4 - Advanced", url: "https://github.com/topics/job-portal-mern", description: "Post job openings from companies and allow users to search, filter, and apply for jobs.", tags: ["Jobs", "File Upload", "MERN"] },
+      { id: "proj_9", folder: "webdev", subpath: "projects", projectNum: 9, title: "9. Event Manager", platform: "MERN Project Idea", author: "Level 4 - Advanced", url: "https://github.com/topics/event-management-mern", description: "Make events, track registrations, and monitor participant lists.", tags: ["Events", "Registration"] },
+      { id: "proj_10", folder: "webdev", subpath: "projects", projectNum: 10, title: "10. Real-Time Chat App", platform: "MERN Project Idea", author: "Level 4 - Advanced", url: "https://github.com/topics/chat-app-socket-io", description: "Allow users to chat with other users through instant messaging using Socket.IO WebSockets.", tags: ["Socket.IO", "Realtime", "Chat"] },
+      { id: "proj_11", folder: "webdev", subpath: "projects", projectNum: 11, title: "11. E-Commerce Website", platform: "MERN Project Idea", author: "Level 5 - Capstone", url: "https://github.com/topics/e-commerce-mern", description: "Develop an e-commerce website with product catalog, shopping cart, orders, and payment gateway.", tags: ["Stripe", "Cart", "E-Commerce"] },
+      { id: "proj_12", folder: "webdev", subpath: "projects", projectNum: 12, title: "12. Project Manager (Kanban)", platform: "MERN Project Idea", author: "Level 5 - Capstone", url: "https://github.com/topics/kanban-mern", description: "Manage projects, team members, tasks, deadlines, and project status through Kanban boards.", tags: ["Kanban", "Teams", "Tasks"] },
+      { id: "proj_13", folder: "webdev", subpath: "projects", projectNum: 13, title: "13. Learning Management System", platform: "MERN Project Idea", author: "Level 5 - Capstone", url: "https://github.com/topics/lms-mern", description: "Offers course management and lessons; includes tests, registrations, and learning progress monitoring.", tags: ["LMS", "Video", "Courses"] },
+      { id: "proj_14", folder: "webdev", subpath: "projects", projectNum: 14, title: "14. Social Media Platform", platform: "MERN Project Idea", author: "Level 5 - Capstone", url: "https://github.com/topics/social-media-mern", description: "Features creating posts, following users, liking content, commenting, and notifications.", tags: ["Social", "Feeds", "Notifications"] },
+      { id: "proj_15", folder: "webdev", subpath: "projects", projectNum: 15, title: "15. Food Delivery App", platform: "MERN Project Idea", author: "Level 5 - Capstone", url: "https://github.com/topics/food-delivery-mern", description: "Facilitates customers' interactions with restaurants for menu browsing, order placement, and delivery monitoring.", tags: ["Food Delivery", "Orders", "Capstone"] },
+
+      // --- DBMS FOLDER ---
+      {
+        id: "dbms_mongodb_oneshot",
+        folder: "dbms",
+        subpath: "mongodb",
+        title: "MongoDB One Shot (Code with Harry)",
+        platform: "YouTube Video",
+        author: "Code with Harry",
+        url: "https://youtu.be/M1dKYQ7GsTg?si=xCjy5_bSjZEvEYzs",
+        description: "Complete MongoDB beginner-to-advanced crash course covering NoSQL concepts, document queries, and Mongoose ORM.",
+        tags: ["MongoDB", "NoSQL", "Mongoose"]
+      },
+      {
+        id: "dbms_mongodb_official",
+        folder: "dbms",
+        subpath: "mongodb",
+        title: "MongoDB Official YouTube Channel",
+        platform: "YouTube Channel",
+        author: "MongoDB Inc.",
+        url: "https://www.youtube.com/@mongodb",
+        description: "Official tutorials on document indexing, aggregation pipelines, schema design, and Atlas cloud database setup.",
+        tags: ["MongoDB", "Official", "Indexing"]
+      },
+      {
+        id: "dbms_sql_fundamentals",
+        folder: "dbms",
+        subpath: "sql_relational",
+        title: "Database Relational Concepts & SQL Guide",
+        platform: "Core CS Track",
+        author: "DBMS Foundations",
+        url: "https://www.postgresql.org/docs/current/tutorial.html",
+        description: "Learn relational database fundamentals: SQL Queries (JOINs, GROUP BY), ER diagrams, Normalization (1NF to BCNF), and ACID transactions.",
+        tags: ["SQL", "Relational", "ACID", "Normalization"]
+      },
+
+      // --- DEPLOYMENT FOLDER ---
+      {
+        id: "deploy_vercel",
+        folder: "deployment",
+        subpath: "frontend_deploy",
+        title: "Vercel Frontend Cloud Hosting",
+        platform: "Cloud Platform",
+        author: "Vercel Docs",
+        url: "https://vercel.com/docs",
+        description: "Instant continuous deployment for frontend React, Next.js, and static web applications from GitHub.",
+        tags: ["Vercel", "Frontend", "Git"]
+      },
+      {
+        id: "deploy_netlify",
+        folder: "deployment",
+        subpath: "frontend_deploy",
+        title: "Netlify Web Deployment",
+        platform: "Cloud Platform",
+        author: "Netlify Docs",
+        url: "https://docs.netlify.com/",
+        description: "Automated static site deployment, forms handling, and serverless functions.",
+        tags: ["Netlify", "Static", "CI/CD"]
+      },
+      {
+        id: "deploy_github_pages",
+        folder: "deployment",
+        subpath: "frontend_deploy",
+        title: "GitHub Pages Free Static Hosting",
+        platform: "GitHub Feature",
+        author: "GitHub Docs",
+        url: "https://pages.github.com/",
+        description: "Host static HTML/CSS/JS websites directly from your GitHub repositories for free.",
+        tags: ["GitHub Pages", "Free", "Static"]
+      },
+      {
+        id: "deploy_render",
+        folder: "deployment",
+        subpath: "backend_deploy",
+        title: "Render Cloud Application Hosting",
+        platform: "Cloud PaaS",
+        author: "Render Docs",
+        url: "https://render.com/docs",
+        description: "Deploy backend Node.js, Express, Python FastAPI, Flask web services, and free PostgreSQL databases.",
+        tags: ["Render", "Backend", "Node", "FastAPI"]
+      },
+      {
+        id: "deploy_firebase_atlas",
+        folder: "deployment",
+        subpath: "backend_deploy",
+        title: "Firebase + MongoDB Atlas Architecture",
+        platform: "Cloud Setup",
+        author: "Firebase / Atlas",
+        url: "https://firebase.google.com/docs",
+        description: "Combine Firebase Authentication and storage with MongoDB Atlas hosted cloud database clusters.",
+        tags: ["Firebase", "MongoDB Atlas", "Production"]
+      },
+
+      // --- C / C++ & ALGO FOLDER ---
+      {
+        id: "c_edx_1_getting_started",
+        folder: "c_cpp",
+        subpath: "edx_c",
+        title: "1. Dartmouth C: Getting Started",
+        platform: "edX Course",
+        author: "Dartmouth College",
+        url: "https://www.edx.org/learn/c-programming/dartmouth-college-c-programming-getting-started",
+        description: "edX Order 1: C syntax, compiler tools, logical condition control, and loops.",
+        tags: ["edX Track", "C Language", "Order 1"]
+      },
+      {
+        id: "c_edx_2_foundations",
+        folder: "c_cpp",
+        subpath: "edx_c",
+        title: "2. Dartmouth C: Language Foundations",
+        platform: "edX Course",
+        author: "Dartmouth College",
+        url: "https://www.edx.org/learn/c-programming/dartmouth-college-c-programming-language-foundations",
+        description: "edX Order 2: Arrays, functions, string manipulation, and modular coding.",
+        tags: ["edX Track", "Arrays", "Order 2"]
+      },
+      {
+        id: "c_edx_3_pointers",
+        folder: "c_cpp",
+        subpath: "edx_c",
+        title: "3. Dartmouth C: Pointers & Memory Management",
+        platform: "edX Course",
+        author: "Dartmouth College",
+        url: "https://www.edx.org/learn/c-programming/dartmouth-college-c-programming-pointers-and-memory-management",
+        description: "edX Order 3: Dynamic memory allocation (malloc/free), stack/heap memory, and raw pointers.",
+        tags: ["edX Track", "Pointers", "Order 3"]
+      },
+      {
+        id: "c_yt_foreign_19hr",
+        folder: "c_cpp",
+        subpath: "yt_c",
+        title: "C Programming 19-Hour One-Shot",
+        platform: "YouTube Video",
+        author: "Foreign Instructor",
+        url: "https://youtu.be/PaPN51Mm5qQ?si=QT9NO1oCiqpjN178",
+        description: "YouTube Option A (Pick any one): Complete 19-hour single video C programming masterclass.",
+        tags: ["YouTube Track", "19-Hour", "One-Shot"]
+      },
+      {
+        id: "c_yt_basics_oneshot",
+        folder: "c_cpp",
+        subpath: "yt_c",
+        title: "C-Basics One-Shot Tutorial",
+        platform: "YouTube Video",
+        author: "YouTube Tutorial",
+        url: "https://www.youtube.com/watch?v=i0ovgS-jCQ8",
+        description: "YouTube Option B (Pick any one): Fast-paced tutorial covering basic C programming concepts.",
+        tags: ["YouTube Track", "C Basics"]
+      },
+      {
+        id: "c_yt_advanced_oneshot",
+        folder: "c_cpp",
+        subpath: "yt_c",
+        title: "Advanced C-Programming One-Shot",
+        platform: "YouTube Video",
+        author: "YouTube Tutorial",
+        url: "https://youtu.be/qmkCmfLJENU?si=LRawWnCwrOX5JWgy",
+        description: "YouTube Option C (Pick any one): Advanced memory management, structures, unions, and preprocessors.",
+        tags: ["YouTube Track", "Advanced C"]
+      },
+      {
+        id: "c_yt_lengthy_playlist",
+        folder: "c_cpp",
+        subpath: "yt_c",
+        title: "Complete C Programming Playlist (Lengthy)",
+        platform: "YouTube Playlist",
+        author: "YouTube Playlist",
+        url: "https://www.youtube.com/playlist?list=PLxgZQoSe9cg1drBnejUaDD9GEJBGQ5hMt",
+        description: "YouTube Option D (Pick any one): Thorough, modular playlist covering C programming step by step.",
+        tags: ["YouTube Track", "Playlist"]
+      },
+      {
+        id: "c_python_dsa_12hr",
+        folder: "c_cpp",
+        subpath: "dsa_algo",
+        title: "DSA in Python (12-Hour Masterclass)",
+        platform: "YouTube Video",
+        author: "DSA Track",
+        url: "https://youtu.be/f9Aje_cN_CY?si=VSf5RMsrgxhUvK8B",
+        description: "12-hour comprehensive algorithms and data structures video tutorial.",
+        tags: ["DSA", "Python", "Algorithms"]
+      }
+    ];
+
+    // ---------------- 3. APP STATE ----------------
+    const STORAGE_KEY = "DEV_VAULT_PROGRESS_V25";
+    const NOTES_KEY = "DEV_VAULT_NOTES_V25";
+
+    let userProgress = {};
+    let userNotes = {};
+    let currentCategory = "all";
+    let currentSubpath = "all";
+    let currentStatusFilter = "all";
+    let currentViewMode = "grid"; // 'grid' or 'folder'
+    let activeModalResourceId = null;
+
+    // ---------------- 4. STORAGE HANDLERS ----------------
+    function loadUserData() {
+      try {
+        const savedProgress = localStorage.getItem(STORAGE_KEY);
+        if (savedProgress) userProgress = JSON.parse(savedProgress);
+
+        const savedNotes = localStorage.getItem(NOTES_KEY);
+        if (savedNotes) userNotes = JSON.parse(savedNotes);
+      } catch (e) {
+        console.error("Error reading localStorage:", e);
+      }
+    }
+
+    function saveUserData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+        localStorage.setItem(NOTES_KEY, JSON.stringify(userNotes));
+      } catch (e) {
+        console.error("Error saving localStorage:", e);
+      }
+      updateStatsUI();
+    }
+
+    // ---------------- 5. STATS CALCULATION ----------------
+    function calculateStats() {
+      let totalCount = 0;
+      let completedCount = 0;
+
+      resourcesData.forEach(res => {
+        if (res.subItems && res.subItems.length > 0) {
+          res.subItems.forEach(sub => {
+            totalCount++;
+            if (userProgress[sub.id]) completedCount++;
+          });
+        } else {
+          totalCount++;
+          if (userProgress[res.id]) completedCount++;
+        }
+      });
+
+      return { totalCount, completedCount };
+    }
+
+    function updateStatsUI() {
+      const { totalCount, completedCount } = calculateStats();
+      const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+      document.getElementById("globalProgressBar").style.width = `${pct}%`;
+      document.getElementById("statPercentageText").textContent = `${pct}%`;
+      document.getElementById("statFractionBadge").textContent = `${completedCount} / ${totalCount} Done`;
+
+      const circle = document.getElementById("statCircleProgress");
+      const circumference = 150.79;
+      const offset = circumference - (pct / 100) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
+
+    // ---------------- 6. SIDEBAR & SUBPATH NAVIGATION ----------------
+    function renderSidebarTree() {
+      const sidebar = document.getElementById("sidebarCategoryTree");
+      
+      let html = `
+        <button onclick="selectFolder('all')" class="cat-nav-btn w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-left transition-all ${currentCategory === 'all' ? 'bg-ghCard text-white border border-ghBlue/40' : 'text-gray-400 hover:text-white hover:bg-ghCard'}">
+          <span class="flex items-center gap-2.5 font-medium">
+            <i class="fa-solid fa-layer-group text-ghBlue"></i> All Folders
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-ghBorder text-gray-300 font-mono">${resourcesData.length}</span>
+        </button>
+      `;
+
+      Object.keys(FOLDERS_SCHEMA).forEach(catKey => {
+        const cat = FOLDERS_SCHEMA[catKey];
+        const isCatActive = currentCategory === catKey;
+        const catItemsCount = resourcesData.filter(r => r.folder === catKey).length;
+
+        html += `
+          <div class="space-y-1">
+            <button onclick="selectFolder('${catKey}')" class="cat-nav-btn w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-left transition-all ${isCatActive ? 'bg-ghCard text-white border border-ghBlue/40' : 'text-gray-400 hover:text-white hover:bg-ghCard'}">
+              <span class="flex items-center gap-2.5 font-medium truncate">
+                <i class="fa-solid ${cat.icon}"></i> ${cat.name}
+              </span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-ghBorder text-gray-300 font-mono">${catItemsCount}</span>
+            </button>
+
+            <!-- SUBPATH NESTED SIDEBAR NODES -->
+            ${(isCatActive || currentCategory === 'all') ? `
+              <div class="pl-6 space-y-1 my-1 border-l-2 border-ghBorder ml-3">
+                ${cat.subpaths.map(sub => {
+                  if (sub.id === 'all') return ''; // Skip "all" inside accordion
+                  const isSubActive = currentCategory === catKey && currentSubpath === sub.id;
+                  const subCount = resourcesData.filter(r => r.folder === catKey && r.subpath === sub.id).length;
+                  
+                  return `
+                    <button onclick="selectSubpath('${catKey}', '${sub.id}')" class="w-full text-left px-2.5 py-1.5 rounded text-xs transition-all flex items-center justify-between ${isSubActive ? 'text-ghBlue font-bold bg-ghBlue/10' : 'text-gray-400 hover:text-gray-200 hover:bg-ghCard/60'}">
+                      <span class="truncate">└ ${sub.name}</span>
+                      <span class="text-[10px] font-mono text-gray-500">${subCount}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      sidebar.innerHTML = html;
+    }
+
+    function renderSubpathTabBar() {
+      const bar = document.getElementById("subpathTabBar");
+      
+      if (currentCategory === "all") {
+        bar.innerHTML = `
+          <span class="text-xs text-gray-400 font-mono px-2 flex items-center gap-2">
+            <i class="fa-solid fa-filter text-ghBlue"></i> Select a specific folder to view subpaths, or browse all below.
+          </span>
+        `;
+        return;
+      }
+
+      const catSchema = FOLDERS_SCHEMA[currentCategory];
+      if (!catSchema) return;
+
+      bar.innerHTML = catSchema.subpaths.map(sub => {
+        const isActive = currentSubpath === sub.id;
+        return `
+          <button onclick="selectSubpath('${currentCategory}', '${sub.id}')" 
+                  class="subpath-chip px-3 py-1.5 rounded-lg text-xs font-semibold font-mono border transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                    isActive ? 'bg-ghCard text-ghBlue border-ghBlue shadow-glowBlue' : 'bg-ghDark text-gray-400 border-ghBorder hover:text-white hover:border-gray-500'
+                  }">
+            <i class="fa-solid ${isActive ? 'fa-folder-open' : 'fa-folder'}"></i>
+            <span>${sub.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectFolder(catKey) {
+      currentCategory = catKey;
+      currentSubpath = "all";
+      updateBreadcrumbs();
+      renderSidebarTree();
+      renderSubpathTabBar();
+      renderAllViews();
+    }
+
+    function selectSubpath(catKey, subpathId) {
+      currentCategory = catKey;
+      currentSubpath = subpathId;
+      updateBreadcrumbs();
+      renderSidebarTree();
+      renderSubpathTabBar();
+      renderAllViews();
+    }
+
+    function updateBreadcrumbs() {
+      const bCat = document.getElementById("breadcrumbCategory");
+      const bDiv = document.getElementById("breadcrumbSubpathDivider");
+      const bSub = document.getElementById("breadcrumbSubpath");
+
+      if (currentCategory === "all") {
+        bCat.textContent = "All Folders";
+        bDiv.classList.add("hidden");
+        bSub.classList.add("hidden");
+      } else {
+        const catSchema = FOLDERS_SCHEMA[currentCategory];
+        bCat.textContent = catSchema ? catSchema.name : currentCategory;
+
+        if (currentSubpath && currentSubpath !== "all") {
+          const subObj = catSchema ? catSchema.subpaths.find(s => s.id === currentSubpath) : null;
+          bDiv.classList.remove("hidden");
+          bSub.classList.remove("hidden");
+          bSub.textContent = subObj ? subObj.name : currentSubpath;
+        } else {
+          bDiv.classList.add("hidden");
+          bSub.classList.add("hidden");
+        }
+      }
+    }
+
+    function setStatusFilter(status) {
+      currentStatusFilter = status;
+
+      const btnAll = document.getElementById("statusBtnAll");
+      const btnPending = document.getElementById("statusBtnPending");
+      const btnCompleted = document.getElementById("statusBtnCompleted");
+
+      [btnAll, btnPending, btnCompleted].forEach(b => {
+        b.className = "status-btn px-2.5 py-1 rounded-md text-xs font-medium bg-ghCard text-gray-400 hover:text-white border border-ghBorder";
+      });
+
+      if (status === "all") btnAll.className = "status-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-ghBlue text-ghDark";
+      if (status === "pending") btnPending.className = "status-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-ghAmber text-ghDark";
+      if (status === "completed") btnCompleted.className = "status-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-ghGreen text-ghDark";
+
+      renderAllViews();
+    }
+
+    function switchView(mode) {
+      currentViewMode = mode;
+      
+      const btnGrid = document.getElementById("viewTabGrid");
+      const btnFolder = document.getElementById("viewTabFolder");
+
+      const viewGrid = document.getElementById("viewGridContainer");
+      const viewFolder = document.getElementById("viewFolderContainer");
+
+      [btnGrid, btnFolder].forEach(b => {
+        b.className = "px-3.5 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 text-gray-400 hover:text-white transition-all";
+      });
+
+      viewGrid.classList.add("hidden");
+      viewFolder.classList.add("hidden");
+
+      if (mode === "grid") {
+        btnGrid.className = "px-3.5 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 transition-all bg-ghCard text-white border border-ghBorder shadow-sm";
+        viewGrid.classList.remove("hidden");
+      } else if (mode === "folder") {
+        btnFolder.className = "px-3.5 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 transition-all bg-ghCard text-white border border-ghBorder shadow-sm";
+        viewFolder.classList.remove("hidden");
+      }
+
+      renderAllViews();
+    }
+
+    function isResourceCompleted(res) {
+      if (res.subItems && res.subItems.length > 0) {
+        return res.subItems.every(sub => userProgress[sub.id]);
+      }
+      return !!userProgress[res.id];
+    }
+
+    // ---------------- 7. VIEW RENDERING ----------------
+    function renderAllViews() {
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase().trim();
+      
+      let filtered = resourcesData.filter(res => {
+        // Main Category Filter
+        if (currentCategory !== "all" && res.folder !== currentCategory) return false;
+
+        // Subpath Filter
+        if (currentSubpath !== "all" && res.subpath !== currentSubpath) return false;
+
+        // Search Term Filter
+        if (searchTerm) {
+          const matchTitle = res.title.toLowerCase().includes(searchTerm);
+          const matchDesc = res.description.toLowerCase().includes(searchTerm);
+          const matchTag = res.tags.some(t => t.toLowerCase().includes(searchTerm));
+          const matchAuthor = res.author.toLowerCase().includes(searchTerm);
+          if (!matchTitle && !matchDesc && !matchTag && !matchAuthor) return false;
+        }
+
+        // Status Filter
+        if (currentStatusFilter !== "all") {
+          const isDone = isResourceCompleted(res);
+          if (currentStatusFilter === "completed" && !isDone) return false;
+          if (currentStatusFilter === "pending" && isDone) return false;
+        }
+
+        return true;
+      });
+
+      document.getElementById("activeItemCount").textContent = `${filtered.length} items found`;
+
+      if (currentViewMode === "grid") {
+        renderGridView(filtered);
+      } else if (currentViewMode === "folder") {
+        renderTreeFolderView(filtered);
+      }
+    }
+
+    function renderGridView(items) {
+      const container = document.getElementById("viewGridContainer");
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 bg-ghCanvas border border-ghBorder rounded-xl p-6">
+            <i class="fa-solid fa-magnifying-glass text-4xl text-gray-500 mb-3"></i>
+            <h3 class="text-base font-bold text-white">No matching resources found</h3>
+            <p class="text-xs text-gray-400 mt-1">Try clearing your search query or choosing another subpath filter.</p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-ghBlue text-ghDark font-bold text-xs rounded-lg shadow-glowBlue">
+              Reset All Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(res => renderResourceCardHTML(res)).join('');
+    }
+
+    function renderResourceCardHTML(res) {
+      const isCompleted = isResourceCompleted(res);
+      const hasNote = !!userNotes[res.id];
+
+      const folderBadgeColor = {
+        aiml: "bg-emerald-950/60 text-emerald-400 border-emerald-800/50",
+        webdev: "bg-cyan-950/60 text-cyan-400 border-cyan-800/50",
+        dbms: "bg-amber-950/60 text-amber-400 border-amber-800/50",
+        deployment: "bg-purple-950/60 text-purple-400 border-purple-800/50",
+        c_cpp: "bg-rose-950/60 text-rose-400 border-rose-800/50"
+      }[res.folder] || "bg-ghBorder text-gray-300 border-ghBorder";
+
+      const platformIcon = res.platform.includes("YouTube") ? "fa-youtube text-red-500" :
+                           res.platform.includes("edX") ? "fa-graduation-cap text-red-400" :
+                           res.platform.includes("Documentation") ? "fa-book text-blue-400" : "fa-code text-ghGreen";
+
+      return `
+        <div class="bg-ghCanvas border ${isCompleted ? 'border-ghGreen/50 bg-ghGreen/5' : 'border-ghBorder'} rounded-xl p-5 shadow-sm hover:border-ghBlue/40 transition-all group relative">
+          
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-mono font-semibold border ${folderBadgeColor}">
+                ${res.folder.toUpperCase()}
+              </span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-mono bg-ghCard text-gray-300 border border-ghBorder flex items-center gap-1.5">
+                <i class="fa-brands ${platformIcon}"></i> ${res.platform}
+              </span>
+              <span class="text-xs px-2 py-0.5 rounded-md font-mono bg-ghDark text-gray-400 border border-ghBorder">
+                ${res.author}
+              </span>
+            </div>
+
+            ${(!res.subItems || res.subItems.length === 0) ? `
+              <label class="cursor-pointer flex items-center gap-2 text-xs font-medium text-gray-300 hover:text-white select-none">
+                <input type="checkbox" onchange="toggleResourceCheck('${res.id}')" ${isCompleted ? 'checked' : ''} class="hidden custom-checkbox">
+                <div class="w-5 h-5 rounded border border-ghBorder flex items-center justify-center transition-all bg-ghDark group-hover:border-ghBlue">
+                  <i class="fa-solid fa-check text-xs text-white ${isCompleted ? 'block' : 'hidden'}"></i>
+                </div>
+                <span class="hidden sm:inline">${isCompleted ? 'Done' : 'Mark'}</span>
+              </label>
+            ` : ''}
+          </div>
+
+          <h3 class="text-base font-bold text-white group-hover:text-ghBlue transition-colors flex items-center gap-2">
+            <a href="${res.url}" target="_blank" rel="noopener" class="hover:underline flex items-center gap-2">
+              ${res.title}
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-400 font-normal"></i>
+            </a>
+          </h3>
+
+          <p class="text-xs text-gray-300 mt-2 leading-relaxed">
+            ${res.description}
+          </p>
+
+          ${res.milestoneNote ? `
+            <div class="mt-3 p-3 rounded-lg bg-ghGreen/10 border border-ghGreen/30 text-xs text-ghGreen font-medium flex items-start gap-2">
+              <i class="fa-solid fa-flag text-sm mt-0.5"></i>
+              <div>${res.milestoneNote}</div>
+            </div>
+          ` : ''}
+
+          ${(res.subItems && res.subItems.length > 0) ? `
+            <div class="mt-4 pt-3 border-t border-ghBorder space-y-2">
+              <div class="text-xs font-bold text-gray-400 font-mono uppercase tracking-wider mb-2">Lectures & Modules Checklist</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                ${res.subItems.map(sub => {
+                  const subDone = !!userProgress[sub.id];
+                  return `
+                    <label class="cursor-pointer flex items-center gap-2.5 p-2 rounded-lg bg-ghDark/80 border border-ghBorder/70 hover:border-ghBlue/40 transition-all select-none">
+                      <input type="checkbox" onchange="toggleSubItemCheck('${sub.id}')" ${subDone ? 'checked' : ''} class="hidden custom-checkbox">
+                      <div class="w-4 h-4 rounded border border-ghBorder flex items-center justify-center transition-all bg-ghCanvas">
+                        <i class="fa-solid fa-check text-[10px] text-white ${subDone ? 'block' : 'hidden'}"></i>
+                      </div>
+                      <span class="text-xs ${subDone ? 'line-through text-gray-500' : 'text-gray-200'}">${sub.title}</span>
+                    </label>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="mt-4 pt-3 border-t border-ghBorder/60 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap gap-1.5">
+              ${res.tags.map(t => `<span class="text-[11px] px-2 py-0.5 rounded bg-ghDark text-gray-400 border border-ghBorder font-mono">#${t}</span>`).join('')}
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="openNotesModal('${res.id}')" class="px-2.5 py-1.5 rounded bg-ghCard hover:bg-ghBorder text-xs text-gray-300 flex items-center gap-1.5 border border-ghBorder transition-all">
+                <i class="fa-solid fa-note-sticky ${hasNote ? 'text-ghAmber' : 'text-gray-400'}"></i>
+                <span class="hidden sm:inline">${hasNote ? 'Notes Saved' : 'Note'}</span>
+              </button>
+
+              <button onclick="copyToClipboard('${res.url}')" class="px-2.5 py-1.5 rounded bg-ghCard hover:bg-ghBorder text-xs text-gray-300 flex items-center gap-1.5 border border-ghBorder transition-all" title="Copy URL">
+                <i class="fa-solid fa-copy text-ghBlue"></i>
+                <span class="hidden sm:inline">Copy Link</span>
+              </button>
+
+              <a href="${res.url}" target="_blank" rel="noopener" class="px-3 py-1.5 rounded bg-ghBlue/10 hover:bg-ghBlue text-ghBlue hover:text-ghDark text-xs font-semibold border border-ghBlue/30 flex items-center gap-1.5 transition-all">
+                <span>Open Link</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTreeFolderView(items) {
+      const container = document.getElementById("viewFolderContainer");
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 bg-ghCanvas border border-ghBorder rounded-xl">
+            <i class="fa-solid fa-folder-open text-3xl text-gray-500 mb-2"></i>
+            <p class="text-xs text-gray-400">No folders match your current filter selection.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = Object.keys(FOLDERS_SCHEMA).map(catKey => {
+        const catSchema = FOLDERS_SCHEMA[catKey];
+        const catItems = items.filter(r => r.folder === catKey);
+
+        if (catItems.length === 0 && currentCategory !== "all") return '';
+
+        return `
+          <div class="bg-ghCanvas border border-ghBorder rounded-xl overflow-hidden shadow-sm">
+            <!-- Main Folder Header -->
+            <div class="px-5 py-3.5 bg-ghCard border-b border-ghBorder flex items-center justify-between cursor-pointer" onclick="toggleTreeSection('${catKey}')">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid ${catSchema.icon} text-lg"></i>
+                <h3 class="font-bold text-sm text-white">${catSchema.name}</h3>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-ghDark border border-ghBorder text-gray-400 font-mono">${catItems.length} items</span>
+              </div>
+              <i id="treeArrow-${catKey}" class="fa-solid fa-chevron-down text-gray-400 transition-transform"></i>
+            </div>
+
+            <!-- Subpath Subfolder Nodes -->
+            <div id="treeBody-${catKey}" class="p-4 space-y-4">
+              ${catSchema.subpaths.map(sub => {
+                if (sub.id === 'all') return '';
+                const subItems = catItems.filter(r => r.subpath === sub.id);
+                if (subItems.length === 0 && currentSubpath !== "all") return '';
+
+                return `
+                  <div class="border-l-2 border-ghBlue/30 pl-4 space-y-3">
+                    <div class="flex items-center justify-between cursor-pointer group" onclick="selectSubpath('${catKey}', '${sub.id}')">
+                      <div class="flex items-center gap-2 text-xs font-mono font-bold text-ghBlue group-hover:underline">
+                        <i class="fa-regular fa-folder-open text-ghAmber"></i>
+                        <span>${sub.name}</span>
+                      </div>
+                      <span class="text-[10px] px-2 py-0.5 rounded bg-ghDark text-gray-400 font-mono">${subItems.length}</span>
+                    </div>
+
+                    <div class="space-y-3">
+                      ${subItems.map(res => renderResourceCardHTML(res)).join('')}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleTreeSection(catKey) {
+      const body = document.getElementById(`treeBody-${catKey}`);
+      const arrow = document.getElementById(`treeArrow-${catKey}`);
+      if (body) {
+        body.classList.toggle("hidden");
+        arrow.classList.toggle("rotate-180");
+      }
+    }
+
+    // ---------------- 8. INTERACTION HANDLERS ----------------
+    function toggleResourceCheck(resourceId) {
+      userProgress[resourceId] = !userProgress[resourceId];
+      saveUserData();
+      renderAllViews();
+      showToast(userProgress[resourceId] ? "Resource marked as completed!" : "Resource marked incomplete.");
+    }
+
+    function toggleSubItemCheck(subId) {
+      userProgress[subId] = !userProgress[subId];
+      saveUserData();
+      renderAllViews();
+      showToast(userProgress[subId] ? "Lecture completed!" : "Lecture unmarked.");
+    }
+
+    function resetFilters() {
+      document.getElementById("searchInput").value = "";
+      document.getElementById("searchInputMobile").value = "";
+      document.getElementById("clearSearchBtn").classList.add("hidden");
+      currentCategory = "all";
+      currentSubpath = "all";
+      currentStatusFilter = "all";
+      
+      updateBreadcrumbs();
+      renderSidebarTree();
+      renderSubpathTabBar();
+      setStatusFilter("all");
+      renderAllViews();
+      showToast("Filters reset to default.");
+    }
+
+    function openNotesModal(resourceId) {
+      activeModalResourceId = resourceId;
+      const res = resourcesData.find(r => r.id === resourceId);
+      if (!res) return;
+
+      document.getElementById("modalResourceTitle").textContent = res.title;
+      document.getElementById("modalResourceCategory").textContent = `Folder: ${res.folder.toUpperCase()} | Subpath: ${res.subpath}`;
+      document.getElementById("noteInputText").value = userNotes[resourceId] || "";
+
+      document.getElementById("notesModal").classList.remove("hidden");
+    }
+
+    function closeNotesModal() {
+      document.getElementById("notesModal").classList.add("hidden");
+      activeModalResourceId = null;
+    }
+
+    function savePersonalNote() {
+      if (!activeModalResourceId) return;
+      const noteVal = document.getElementById("noteInputText").value.trim();
+
+      if (noteVal) {
+        userNotes[activeModalResourceId] = noteVal;
+        showToast("Personal note saved!");
+      } else {
+        delete userNotes[activeModalResourceId];
+        showToast("Note cleared.");
+      }
+
+      saveUserData();
+      closeNotesModal();
+      renderAllViews();
+    }
+
+    function openResetConfirmModal() {
+      document.getElementById("resetModal").classList.remove("hidden");
+    }
+
+    function closeResetModal() {
+      document.getElementById("resetModal").classList.add("hidden");
+    }
+
+    function executeResetAll() {
+      userProgress = {};
+      userNotes = {};
+      saveUserData();
+      closeResetModal();
+      renderAllViews();
+      showToast("All tracked progress and study notes have been reset.", true);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+      }
+      showToast("Link copied to clipboard!");
+    }
+
+    function showToast(message, isAlert = false) {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      
+      toast.className = `pointer-events-auto px-4 py-3 rounded-lg shadow-xl border text-xs font-medium flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 ${
+        isAlert ? 'bg-red-950 text-red-200 border-red-800' : 'bg-ghCard text-white border-ghBlue/40'
+      }`;
+
+      toast.innerHTML = `
+        <i class="fa-solid ${isAlert ? 'fa-circle-exclamation text-ghRed' : 'fa-circle-check text-ghGreen'}"></i>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
+      });
+
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // ---------------- 9. INITIALIZATION ----------------
+    window.onload = function() {
+      loadUserData();
+      updateStatsUI();
+      renderSidebarTree();
+      renderSubpathTabBar();
+      updateBreadcrumbs();
+      renderAllViews();
+
+      const searchInput = document.getElementById("searchInput");
+      const searchInputMobile = document.getElementById("searchInputMobile");
+      const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+      function handleSearchInput(e) {
+        const val = e.target.value;
+        if (e.target !== searchInput) searchInput.value = val;
+        if (e.target !== searchInputMobile) searchInputMobile.value = val;
+
+        if (val.length > 0) {
+          clearSearchBtn.classList.remove("hidden");
+        } else {
+          clearSearchBtn.classList.add("hidden");
+        }
+        renderAllViews();
+      }
+
+      searchInput.addEventListener("input", handleSearchInput);
+      searchInputMobile.addEventListener("input", handleSearchInput);
+
+      clearSearchBtn.addEventListener("click", () => {
+        searchInput.value = "";
+        searchInputMobile.value = "";
+        clearSearchBtn.classList.add("hidden");
+        renderAllViews();
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      });
+    };
+  </script>
+</body>
+</html>
