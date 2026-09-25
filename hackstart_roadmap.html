@@ -11,10 +11,10 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-  <!-- Inter & Fira Code Fonts -->
+  <!-- Space Grotesk & JetBrains Mono Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -22,25 +22,25 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['Fira Code', 'monospace'],
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
-            ghDark: '#0d1117',
-            ghCanvas: '#161b22',
-            ghCard: '#21262d',
-            ghBorder: '#30363d',
-            ghGreen: '#238636',
-            ghGreenGlow: '#2ea043',
-            ghBlue: '#58a6ff',
-            ghPurple: '#bc8cff',
-            ghAmber: '#d29922',
+            ghDark: '#000000',
+            ghCanvas: '#0a0d0a',
+            ghCard: '#141914',
+            ghBorder: '#2b332b',
+            ghGreen: '#22c55e',
+            ghGreenGlow: '#4ade80',
+            ghBlue: '#34d399',
+            ghPurple: '#ffffff',
+            ghAmber: '#d9f9e0',
             ghRed: '#f85149',
           },
           boxShadow: {
-            glowBlue: '0 0 15px rgba(88, 166, 255, 0.25)',
-            glowGreen: '0 0 15px rgba(46, 160, 67, 0.25)',
-            glowAmber: '0 0 15px rgba(210, 153, 34, 0.25)',
+            glowBlue: '0 0 15px rgba(52, 211, 153, 0.25)',
+            glowGreen: '0 0 15px rgba(34, 197, 94, 0.25)',
+            glowAmber: '0 0 15px rgba(217, 249, 224, 0.2)',
           }
         }
       }
@@ -95,7 +95,7 @@
       
       <!-- Brand Logo -->
       <div class="flex items-center space-x-3 cursor-pointer" onclick="resetFilters()">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-ghBlue via-purple-500 to-ghGreen flex items-center justify-center text-ghDark text-xl font-extrabold shadow-glowBlue">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-ghGreen via-emerald-300 to-white flex items-center justify-center text-ghDark text-xl font-extrabold shadow-glowBlue">
           <i class="fa-solid font-mono fa-terminal"></i>
         </div>
         <div>
@@ -138,7 +138,7 @@
 
     <!-- Header Progress Line -->
     <div class="w-full bg-ghCanvas h-1 relative border-t border-ghBorder overflow-hidden">
-      <div id="globalProgressBar" class="bg-gradient-to-r from-ghBlue via-ghPurple to-ghGreen h-full transition-all duration-500" style="width: 0%"></div>
+      <div id="globalProgressBar" class="bg-gradient-to-r from-ghGreen via-white to-ghGreenGlow h-full transition-all duration-500" style="width: 0%"></div>
     </div>
   </header>
 
@@ -325,26 +325,24 @@
           { id: "all", name: "All AI/ML" },
           { id: "data_handling", name: "Data Handling (Python, NumPy, Pandas, Viz)" },
           { id: "dsa_python", name: "DSA in Python" },
-          { id: "fastapi_ml", name: "FastAPI Backend" },
-          { id: "flask_ml", name: "Flask Backend" }
+          { id: "fastapi_ml", name: "FastAPI Backend" }
         ]
       },
       webdev: {
         id: "webdev",
         name: "Web Development",
-        icon: "fa-code text-cyan-400",
+        icon: "fa-code text-lime-400",
         subpaths: [
           { id: "all", name: "All Web Dev" },
           { id: "mern", name: "MERN Stack Roadmap" },
           { id: "fastapi", name: "FastAPI Track" },
-          { id: "flask", name: "Flask Track" },
           { id: "projects", name: "15 MERN Projects" }
         ]
       },
       dbms: {
         id: "dbms",
         name: "Database Management (DBMS)",
-        icon: "fa-database text-amber-400",
+        icon: "fa-database text-green-400",
         subpaths: [
           { id: "all", name: "All DBMS" },
           { id: "mongodb", name: "MongoDB Track" },
@@ -354,7 +352,7 @@
       deployment: {
         id: "deployment",
         name: "Deployment & Cloud",
-        icon: "fa-rocket text-purple-400",
+        icon: "fa-rocket text-teal-300",
         subpaths: [
           { id: "all", name: "All Deployment" },
           { id: "frontend_deploy", name: "Frontend Hosting" },
@@ -364,7 +362,7 @@
       c_cpp: {
         id: "c_cpp",
         name: "C / C++ & Algorithms",
-        icon: "fa-bolt text-rose-400",
+        icon: "fa-bolt text-gray-200",
         subpaths: [
           { id: "all", name: "All C/C++ & Algo" },
           { id: "edx_c", name: "edX Dartmouth Track (Order 1-3)" },
@@ -417,29 +415,28 @@
         description: "Asynchronous Python web framework for building high-performance ML model deployment APIs.",
         tags: ["FastAPI", "Python", "ML Deployment"]
       },
-      {
-        id: "aiml_flask_yt",
-        folder: "aiml",
-        subpath: "flask_ml",
-        title: "Flask Web Development Tutorial",
-        platform: "YouTube Video",
-        author: "Flask Track",
-        url: "https://youtu.be/Qr4QMBUPxWo?si=KVkbt7fKORTncBKlMC3Zt1i",
-        description: "Build lightweight Python web apps and ML API microservices using Flask.",
-        tags: ["Flask", "Python", "APIs"]
-      },
-
       // --- WEB DEV FOLDER: MERN ROADMAP ---
       {
         id: "web_html_css",
         folder: "webdev",
         subpath: "mern",
-        title: "1. HTML + CSS Foundations",
-        platform: "freeCodeCamp / Code with Harry",
+        title: "1. HTML + CSS - freeCodeCamp",
+        platform: "freeCodeCamp",
         author: "MERN Step 1",
         url: "https://www.freecodecamp.org/",
         description: "Master HTML5 semantics, modern CSS3 Flexbox, CSS Grid, responsive design, and CSS frameworks.",
         tags: ["HTML", "CSS", "Frontend", "MERN Step 1"]
+      },
+      {
+        id: "web_html_css_harry",
+        folder: "webdev",
+        subpath: "mern",
+        title: "1. HTML + CSS - Code with Harry Playlist",
+        platform: "YouTube Playlist",
+        author: "Code with Harry",
+        url: "https://www.youtube.com/watch?v=tVzUXW6siu0&list=PLu0W_9lII9agq5TrH9XLIKQvv0iaF2X3w",
+        description: "Complete HTML and CSS playlist covering semantics, styling, Flexbox, Grid, and responsive layouts.",
+        tags: ["HTML", "CSS", "Frontend", "Code with Harry", "MERN Step 1"]
       },
       {
         id: "web_js_chai",
@@ -565,30 +562,6 @@
         tags: ["FastAPI", "Docs", "Python"]
       },
 
-      // --- WEB DEV FOLDER: FLASK TRACK ---
-      {
-        id: "web_flask_docs",
-        folder: "webdev",
-        subpath: "flask",
-        title: "Flask Official Documentation",
-        platform: "Documentation",
-        author: "Pallets Projects",
-        url: "https://share.google/mMRjETb8FI",
-        description: "Official documentation for Flask WSGI microframework. Learn routes, request handling, blueprints, and database extensions.",
-        tags: ["Flask", "Docs", "Python"]
-      },
-      {
-        id: "web_flask_yt",
-        folder: "webdev",
-        subpath: "flask",
-        title: "Flask Web Development Masterclass",
-        platform: "YouTube Video",
-        author: "Flask Video Series",
-        url: "https://youtu.be/Qr4QMBUPxWo?si=KVkbt7fKORTncBKlMC3Zt1i",
-        description: "Hands-on video course covering Flask web server setup, Jinja2 templating, SQLAlchemy ORM, and user authentication.",
-        tags: ["Flask", "YouTube", "Backend Track"]
-      },
-
       // --- WEB DEV FOLDER: 15 MERN PRACTICE PROJECTS ---
       { id: "proj_1", folder: "webdev", subpath: "projects", projectNum: 1, title: "1. To-Do App", platform: "MERN Project Idea", author: "Level 1 - Starter", url: "https://github.com/topics/todo-app-mern", description: "Manage tasks for the day with options to create, update, delete (CRUD), and mark tasks as done.", tags: ["CRUD", "React", "Node", "MongoDB"] },
       { id: "proj_2", folder: "webdev", subpath: "projects", projectNum: 2, title: "2. Notes App", platform: "MERN Project Idea", author: "Level 1 - Starter", url: "https://github.com/topics/notes-app-mern", description: "Create, edit, organize, search, and delete personal notes.", tags: ["Notes", "Search", "State"] },
@@ -683,7 +656,7 @@
         platform: "Cloud PaaS",
         author: "Render Docs",
         url: "https://render.com/docs",
-        description: "Deploy backend Node.js, Express, Python FastAPI, Flask web services, and free PostgreSQL databases.",
+        description: "Deploy backend Node.js, Express, Python FastAPI web services, and free PostgreSQL databases.",
         tags: ["Render", "Backend", "Node", "FastAPI"]
       },
       {
@@ -1098,15 +1071,15 @@
 
       const folderBadgeColor = {
         aiml: "bg-emerald-950/60 text-emerald-400 border-emerald-800/50",
-        webdev: "bg-cyan-950/60 text-cyan-400 border-cyan-800/50",
-        dbms: "bg-amber-950/60 text-amber-400 border-amber-800/50",
-        deployment: "bg-purple-950/60 text-purple-400 border-purple-800/50",
-        c_cpp: "bg-rose-950/60 text-rose-400 border-rose-800/50"
+        webdev: "bg-lime-950/60 text-lime-400 border-lime-800/50",
+        dbms: "bg-green-950/60 text-green-400 border-green-800/50",
+        deployment: "bg-teal-950/60 text-teal-300 border-teal-800/50",
+        c_cpp: "bg-white/10 text-gray-200 border-white/20"
       }[res.folder] || "bg-ghBorder text-gray-300 border-ghBorder";
 
-      const platformIcon = res.platform.includes("YouTube") ? "fa-youtube text-red-500" :
-                           res.platform.includes("edX") ? "fa-graduation-cap text-red-400" :
-                           res.platform.includes("Documentation") ? "fa-book text-blue-400" : "fa-code text-ghGreen";
+      const platformIcon = res.platform.includes("YouTube") ? "fa-youtube text-ghGreen" :
+                           res.platform.includes("edX") ? "fa-graduation-cap text-white" :
+                           res.platform.includes("Documentation") ? "fa-book text-lime-300" : "fa-code text-ghGreen";
 
       return `
         <div class="bg-ghCanvas border ${isCompleted ? 'border-ghGreen/50 bg-ghGreen/5' : 'border-ghBorder'} rounded-xl p-5 shadow-sm hover:border-ghBlue/40 transition-all group relative">
