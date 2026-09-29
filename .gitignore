@@ -1,0 +1,5 @@
+participants.json
+participants.json.*.tmp
+__pycache__/
+*.py[cod]
+.venv/
