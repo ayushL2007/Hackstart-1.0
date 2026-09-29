@@ -2,7 +2,7 @@
 
 ## Flask registration server
 
-This branch serves the website, registration form, and dashboard through Flask. Python 3.10 or newer is required.
+The website, registration form, and dashboard are shared on `main`; the Flask API and its dependency are maintained on `server`. Python 3.10 or newer is required.
 
 For local development in PowerShell:
 
@@ -28,15 +28,13 @@ Visit `http://localhost:3000/registration.html` or `http://localhost:3000/dashbo
 
 PythonAnywhere is the simplest free option for this file-backed app: its free Beginner account includes one web app and persistent home-directory storage. The JSON file survives app restarts there. Keep a separate backup of `participants.json`; for heavier use, move records to a database.
 
-1. Commit and push the `server` branch from this workspace:
+1. Push both branches. The `server` branch should include the latest `main` pages as well as the API:
 
 	```powershell
-	git add .gitignore README.md index.html app.py dashboard.html registration.html requirements.txt
-	git commit -m "Add Flask team registration server"
-	git push -u origin server
+	git push origin main
+	git push origin server
 	```
 
-	The branch currently has no commit containing these files, so run these commands before cloning it on PythonAnywhere.
 2. Create a free Beginner account at [PythonAnywhere](https://www.pythonanywhere.com/).
 3. Open a Bash console and clone the branch, replacing the URL if your repository differs:
 
