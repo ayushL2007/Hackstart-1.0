@@ -13,12 +13,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 from werkzeug.exceptions import BadRequest, RequestEntityTooLarge
 
 
-ROOT = Path(__file__).resolve().parent
-PARTICIPANTS_FILE = Path(os.environ.get("PARTICIPANTS_FILE", ROOT / "participants.json"))
+PARTICIPANTS_FILE = Path(
+    os.environ.get("PARTICIPANTS_FILE", os.path.join(os.path.dirname(__file__), "participants.json"))
+)
 MAX_BODY_BYTES = 16 * 1024
 TOPICS = {"a", "b", "c", "d", "open-track"}
 PHONE_PATTERN = re.compile(r"^[+()0-9.\-\s]{7,32}$")
@@ -27,19 +28,6 @@ FILE_LOCK = threading.Lock()
 
 app = Flask(__name__, static_folder=None)
 app.config["MAX_CONTENT_LENGTH"] = MAX_BODY_BYTES
-
-STATIC_FILES = {
-    "index.html",
-    "registration.html",
-    "dashboard.html",
-    "hackstart_roadmap.html",
-    "logo.png",
-    "hackstart-web.pdf",
-    "dbms.pdf",
-    "ml.pdf",
-    "deployment.pdf",
-    "demo.pdf",
-}
 
 
 def authorized(token_name: str) -> bool:
@@ -171,21 +159,6 @@ def participants_api():
         app.logger.exception("Could not save participant record")
         return jsonify(error="Could not save registration."), 500
     return jsonify(id=registration["id"], message="Registration saved."), 201
-
-
-@app.get("/")
-def home():
-    return send_from_directory(ROOT, "index.html")
-
-
-@app.route("/<path:requested_path>", methods=["GET", "HEAD"])
-def static_page(requested_path: str):
-    prefix = "Hackstart-1.0/"
-    if requested_path.startswith(prefix):
-        requested_path = requested_path[len(prefix):]
-    if requested_path not in STATIC_FILES:
-        return "Not found", 404
-    return send_from_directory(ROOT, requested_path)
 
 
 if __name__ == "__main__":
